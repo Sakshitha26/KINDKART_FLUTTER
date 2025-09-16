@@ -1,0 +1,757 @@
+import 'package:flutter/material.dart';
+import 'dart:async'; // Required for Future.delayed
+
+void main() {
+  runApp(KindKartApp());
+}
+
+class KindKartApp extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) {
+    return MaterialApp(
+      title: 'KindKart',
+      theme: ThemeData(primarySwatch: Colors.green),
+      home: SplashScreen(),
+    );
+  }
+}
+
+class SplashScreen extends StatefulWidget {
+  @override
+  _SplashScreenState createState() => _SplashScreenState();
+}
+
+class _SplashScreenState extends State<SplashScreen> {
+  @override
+  void initState() {
+    super.initState();
+    Future<void>.delayed(const Duration(seconds: 2), () {
+      Navigator.pushReplacement(
+        context,
+        MaterialPageRoute<LoginScreen>(builder: (_) => LoginScreen()),
+      );
+    });
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return const Scaffold(
+      backgroundColor: Colors.green,
+      body: Center(
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: <Widget>[
+            Icon(Icons.card_giftcard, size: 80, color: Colors.white),
+            SizedBox(height: 16),
+            Text(
+              'KindKart',
+              style: TextStyle(
+                fontSize: 32,
+                fontWeight: FontWeight.bold,
+                color: Colors.white,
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+class LoginScreen extends StatelessWidget {
+  final TextEditingController emailController = TextEditingController();
+  final TextEditingController passwordController = TextEditingController();
+
+  static final RegExp _emailRegex = RegExp(r'^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$');
+
+  static String? _validatePassword(String password) {
+    if (password.length < 8) {
+      return 'Password must be at least 8 characters long.';
+    }
+    if (!password.contains(RegExp(r'[A-Z]'))) {
+      return 'Password must contain at least one uppercase letter.';
+    }
+    if (!password.contains(RegExp(r'[a-z]'))) {
+      return 'Password must contain at least one lowercase letter.';
+    }
+    if (!password.contains(RegExp(r'[0-9]'))) {
+      return 'Password must contain at least one digit.';
+    }
+    if (!password.contains(RegExp(r'[!@#\$&*~]'))) {
+      return 'Password must contain at least one special character (!@#\$&*~).';
+    }
+    return null; // Password is valid
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(title: const Text('Login')),
+      body: Padding(
+        padding: const EdgeInsets.all(16),
+        child: Column(
+          children: <Widget>[
+            TextField(
+              controller: emailController,
+              decoration: const InputDecoration(labelText: 'Email'),
+              keyboardType: TextInputType.emailAddress,
+            ),
+            const SizedBox(height: 12),
+            TextField(
+              controller: passwordController,
+              obscureText: true,
+              decoration: const InputDecoration(labelText: 'Password'),
+            ),
+            const SizedBox(height: 16),
+            ElevatedButton(
+              onPressed: () {
+                final String email = emailController.text.trim();
+                final String password = passwordController.text.trim();
+
+                if (email.isEmpty || password.isEmpty) {
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    const SnackBar(
+                      content: Text('Please enter both email and password.'),
+                    ),
+                  );
+                  return;
+                }
+
+                if (!_emailRegex.hasMatch(email)) {
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    const SnackBar(
+                      content: Text('Please enter a valid email address.'),
+                    ),
+                  );
+                  return;
+                }
+
+                final String? passwordError = _validatePassword(password);
+                if (passwordError != null) {
+                  ScaffoldMessenger.of(
+                    context,
+                  ).showSnackBar(SnackBar(content: Text(passwordError)));
+                  return;
+                }
+
+                // If all validations pass
+                Navigator.pushReplacement(
+                  context,
+                  MaterialPageRoute<MainScreen>(builder: (_) => MainScreen()),
+                );
+              },
+              style: ElevatedButton.styleFrom(backgroundColor: Colors.green),
+              child: const Text('Login'),
+            ),
+            TextButton(
+              onPressed: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute<SignUpScreen>(
+                    builder: (_) => SignUpScreen(),
+                  ),
+                );
+              },
+              child: const Text("Don't have an account? Sign Up"),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+class SignUpScreen extends StatelessWidget {
+  final TextEditingController nameController = TextEditingController();
+  final TextEditingController emailController = TextEditingController();
+  final TextEditingController passwordController = TextEditingController();
+
+  static final RegExp _emailRegex = RegExp(r'^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$');
+
+  static String? _validatePassword(String password) {
+    if (password.length < 8) {
+      return 'Password must be at least 8 characters long.';
+    }
+    if (!password.contains(RegExp(r'[A-Z]'))) {
+      return 'Password must contain at least one uppercase letter.';
+    }
+    if (!password.contains(RegExp(r'[a-z]'))) {
+      return 'Password must contain at least one lowercase letter.';
+    }
+    if (!password.contains(RegExp(r'[0-9]'))) {
+      return 'Password must contain at least one digit.';
+    }
+    if (!password.contains(RegExp(r'[!@#\$&*~]'))) {
+      return 'Password must contain at least one special character (!@#\$&*~).';
+    }
+    return null; // Password is valid
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(title: const Text('Sign Up')),
+      body: Padding(
+        padding: const EdgeInsets.all(16),
+        child: Column(
+          children: <Widget>[
+            TextField(
+              controller: nameController,
+              decoration: const InputDecoration(labelText: 'Name'),
+            ),
+            const SizedBox(height: 12),
+            TextField(
+              controller: emailController,
+              decoration: const InputDecoration(labelText: 'Email'),
+              keyboardType: TextInputType.emailAddress,
+            ),
+            const SizedBox(height: 12),
+            TextField(
+              controller: passwordController,
+              obscureText: true,
+              decoration: const InputDecoration(labelText: 'Password'),
+            ),
+            const SizedBox(height: 16),
+            ElevatedButton(
+              onPressed: () {
+                final String name = nameController.text.trim();
+                final String email = emailController.text.trim();
+                final String password = passwordController.text.trim();
+
+                if (name.isEmpty || email.isEmpty || password.isEmpty) {
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    const SnackBar(content: Text('Please fill all fields.')),
+                  );
+                  return;
+                }
+
+                if (!_emailRegex.hasMatch(email)) {
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    const SnackBar(
+                      content: Text('Please enter a valid email address.'),
+                    ),
+                  );
+                  return;
+                }
+
+                final String? passwordError = _validatePassword(password);
+                if (passwordError != null) {
+                  ScaffoldMessenger.of(
+                    context,
+                  ).showSnackBar(SnackBar(content: Text(passwordError)));
+                  return;
+                }
+
+                // If all validations pass
+                Navigator.pushReplacement(
+                  context,
+                  MaterialPageRoute<MainScreen>(builder: (_) => MainScreen()),
+                );
+              },
+              style: ElevatedButton.styleFrom(backgroundColor: Colors.green),
+              child: const Text('Sign Up'),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+class Item {
+  final String description;
+  final String category;
+  int quantity;
+  bool isBought;
+
+  Item({
+    required this.description,
+    required this.category,
+    required this.quantity,
+    this.isBought = false,
+  });
+}
+
+class MainScreen extends StatefulWidget {
+  @override
+  _MainScreenState createState() => _MainScreenState();
+}
+
+class _MainScreenState extends State<MainScreen> {
+  int _selectedIndex = 0;
+  String? role;
+  final List<Item> postedItems = <Item>[];
+  final List<String> categories = <String>['Food', 'Clothes', 'Stationary'];
+
+  void _onTap(int index) {
+    setState(() {
+      _selectedIndex = index;
+    });
+  }
+
+  void setRole(String selectedRole) {
+    setState(() {
+      role = selectedRole;
+      _selectedIndex = 0; // Navigate to home after role selection
+    });
+  }
+
+  void addItem(Item item) {
+    setState(() {
+      postedItems.add(item);
+      _selectedIndex = 2; // Navigate to categories after posting
+    });
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final List<Widget> _screens = <Widget>[
+      HomeScreen(role: role, onRoleSelected: setRole),
+      PostScreen(role: role, categories: categories, onItemPosted: addItem),
+      CategoriesScreen(
+        categories: categories,
+        postedItems: postedItems,
+        role: role,
+      ),
+    ];
+
+    return Scaffold(
+      appBar: AppBar(title: const Text('KindKart')),
+      body: _screens[_selectedIndex],
+      bottomNavigationBar: BottomNavigationBar(
+        currentIndex: _selectedIndex,
+        onTap: (int index) {
+          if (role == null && index != 0) {
+            ScaffoldMessenger.of(context).showSnackBar(
+              const SnackBar(
+                content: Text('Please choose Sender or Receiver first.'),
+              ),
+            );
+            return;
+          }
+          _onTap(index);
+        },
+        selectedItemColor: Colors.green,
+        unselectedItemColor: Colors.grey,
+        items: const <BottomNavigationBarItem>[
+          BottomNavigationBarItem(icon: Icon(Icons.home), label: 'Home'),
+          BottomNavigationBarItem(icon: Icon(Icons.post_add), label: 'Post'),
+          BottomNavigationBarItem(
+            icon: Icon(Icons.category),
+            label: 'Categories',
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+class HomeScreen extends StatelessWidget {
+  final String? role;
+  final Function(String) onRoleSelected;
+
+  const HomeScreen({Key? key, required this.role, required this.onRoleSelected})
+    : super(key: key);
+
+  void _selectRole(BuildContext context) async {
+    final String? selected = await showDialog<String>(
+      context: context,
+      builder: (BuildContext context) => SimpleDialog(
+        title: const Text('Select Role'),
+        children: <Widget>[
+          SimpleDialogOption(
+            onPressed: () => Navigator.pop(context, 'Sender'),
+            child: const Text('Sender'),
+          ),
+          SimpleDialogOption(
+            onPressed: () => Navigator.pop(context, 'Receiver'),
+            child: const Text('Receiver'),
+          ),
+        ],
+      ),
+    );
+
+    if (selected != null) {
+      onRoleSelected(selected);
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Center(
+      child: Padding(
+        padding: const EdgeInsets.all(16.0),
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: <Widget>[
+            if (role == null)
+              // If no role is selected, prompt to choose a role.
+              Column(
+                children: <Widget>[
+                  const Padding(
+                    padding: EdgeInsets.only(bottom: 20),
+                    child: Text(
+                      'Please select your role to proceed with the app functionalities.',
+                      style: TextStyle(
+                        fontSize: 20,
+                        fontWeight: FontWeight.bold,
+                      ),
+                      textAlign: TextAlign.center,
+                    ),
+                  ),
+                  ElevatedButton(
+                    onPressed: () => _selectRole(context),
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: Colors.green,
+                    ),
+                    child: const Text('Choose Sender or Receiver'),
+                  ),
+                ],
+              )
+            else
+              // If a role is selected, display welcome message and role-specific hints.
+              Column(
+                children: <Widget>[
+                  Padding(
+                    padding: const EdgeInsets.only(bottom: 20),
+                    child: Text(
+                      'Welcome, you are currently acting as a ${role!}.',
+                      style: const TextStyle(
+                        fontSize: 20,
+                        fontWeight: FontWeight.bold,
+                      ),
+                      textAlign: TextAlign.center,
+                    ),
+                  ),
+                  if (role == 'Sender')
+                    const Text(
+                      'As a Sender, you can post items you wish to donate using the "Post" tab below.',
+                      textAlign: TextAlign.center,
+                      style: TextStyle(fontSize: 16),
+                    )
+                  else if (role == 'Receiver')
+                    const Text(
+                      'As a Receiver, you can browse and acquire items from the "Categories" tab below.',
+                      textAlign: TextAlign.center,
+                      style: TextStyle(fontSize: 16),
+                    ),
+                  const SizedBox(height: 30),
+                  TextButton(
+                    onPressed: () => _selectRole(context),
+                    child: const Text(
+                      'Change Role',
+                      style: TextStyle(color: Colors.green, fontSize: 16),
+                    ),
+                  ),
+                ],
+              ),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+class PostScreen extends StatefulWidget {
+  final String? role;
+  final List<String> categories;
+  final Function(Item) onItemPosted;
+
+  const PostScreen({
+    Key? key,
+    required this.role,
+    required this.categories,
+    required this.onItemPosted,
+  }) : super(key: key);
+
+  @override
+  _PostScreenState createState() => _PostScreenState();
+}
+
+class _PostScreenState extends State<PostScreen> {
+  final TextEditingController descriptionController = TextEditingController();
+  String? selectedCategory;
+  final TextEditingController quantityController = TextEditingController();
+
+  void _postItem() {
+    final String description = descriptionController.text.trim();
+    final int qty = int.tryParse(quantityController.text.trim()) ?? 0;
+    final String? category = selectedCategory;
+
+    if (description.isEmpty || category == null || qty <= 0) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Please fill all fields correctly.')),
+      );
+      return;
+    }
+
+    final Item newItem = Item(
+      description: description,
+      category: category,
+      quantity: qty,
+    );
+    widget.onItemPosted(newItem);
+
+    descriptionController.clear();
+    quantityController.clear();
+    setState(() {
+      selectedCategory = null; // Reset selected category after posting
+    });
+
+    ScaffoldMessenger.of(
+      context,
+    ).showSnackBar(const SnackBar(content: Text('Item posted successfully.')));
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    if (widget.role != 'Sender') {
+      return const Center(
+        child: Padding(
+          padding: EdgeInsets.all(16.0),
+          child: Text(
+            'Only Senders can post items. Please select "Sender" role from the Home screen.',
+            stextAlign: TextAlign.center,
+            style: TextStyle(fontSize: 18),
+          ),
+        ),
+      );
+    }
+
+    return Padding(
+      padding: const EdgeInsets.all(16),
+      child: ListView(
+        children: <Widget>[
+          TextField(
+            controller: descriptionController,
+            decoration: const InputDecoration(labelText: 'Description'),
+          ),
+          const SizedBox(height: 12),
+          DropdownButtonFormField<String>(
+            initialValue:
+                selectedCategory, // Use value to control selected item
+            decoration: const InputDecoration(labelText: 'Category'),
+            items: widget.categories
+                .map<DropdownMenuItem<String>>(
+                  (String cat) =>
+                      DropdownMenuItem<String>(value: cat, child: Text(cat)),
+                )
+                .toList(),
+            onChanged: (String? value) {
+              setState(() {
+                selectedCategory = value;
+              });
+            },
+            hint: const Text('Select a category'), // Added hint for better UX
+          ),
+          const SizedBox(height: 12),
+          TextField(
+            controller: quantityController,
+            keyboardType: TextInputType.number,
+            decoration: const InputDecoration(labelText: 'Quantity'),
+          ),
+          const SizedBox(height: 16),
+          ElevatedButton(
+            onPressed: _postItem,
+            style: ElevatedButton.styleFrom(backgroundColor: Colors.green),
+            child: const Text('Post Item'),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+class CategoriesScreen extends StatefulWidget {
+  final List<String> categories;
+  final List<Item> postedItems;
+  final String? role;
+
+  const CategoriesScreen({
+    Key? key,
+    required this.categories,
+    required this.postedItems,
+    required this.role,
+  }) : super(key: key);
+
+  @override
+  _CategoriesScreenState createState() => _CategoriesScreenState();
+}
+
+class _CategoriesScreenState extends State<CategoriesScreen> {
+  void _showPurchaseDialog(BuildContext context, Item item) {
+    final TextEditingController phoneController = TextEditingController();
+    final TextEditingController addressController = TextEditingController();
+    final TextEditingController quantityController = TextEditingController();
+
+    showDialog<AlertDialog>(
+      context: context,
+      builder: (BuildContext context) => AlertDialog(
+        title: const Text('Enter your details'),
+        content: SingleChildScrollView(
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: <Widget>[
+              TextField(
+                controller: quantityController,
+                keyboardType: TextInputType.number,
+                decoration: InputDecoration(
+                  labelText: 'Quantity (Available: ${item.quantity})',
+                ),
+              ),
+              TextField(
+                controller: phoneController,
+                keyboardType: TextInputType.phone,
+                decoration: const InputDecoration(
+                  labelText: 'Phone Number (10 digits)',
+                ),
+              ),
+              TextField(
+                controller: addressController,
+                decoration: const InputDecoration(labelText: 'Address'),
+              ),
+            ],
+          ),
+        ),
+        actions: <Widget>[
+          TextButton(
+            onPressed: () => Navigator.pop(context),
+            child: const Text('Cancel'),
+          ),
+          ElevatedButton(
+            onPressed: () {
+              final int qty = int.tryParse(quantityController.text.trim()) ?? 0;
+              final String phone = phoneController.text.trim();
+              final String address = addressController.text.trim();
+
+              // Sanitize phone number to contain only digits
+              final String sanitizedPhone = phone.replaceAll(
+                RegExp(r'[^\d]'),
+                '',
+              );
+              // Validate for exactly 10 digits
+              final bool phoneValid = sanitizedPhone.length == 10;
+
+              if (qty <= 0) {
+                ScaffoldMessenger.of(context).showSnackBar(
+                  const SnackBar(content: Text('Enter a valid quantity.')),
+                );
+                return;
+              }
+              if (qty > item.quantity) {
+                ScaffoldMessenger.of(context).showSnackBar(
+                  const SnackBar(
+                    content: Text('Quantity exceeds available stock.'),
+                  ),
+                );
+                return;
+              }
+              if (!phoneValid) {
+                ScaffoldMessenger.of(context).showSnackBar(
+                  const SnackBar(
+                    content: Text(
+                      'Please enter a valid 10-digit phone number.',
+                    ),
+                  ),
+                );
+                return;
+              }
+              if (address.isEmpty) {
+                ScaffoldMessenger.of(context).showSnackBar(
+                  const SnackBar(content: Text('Please enter your address.')),
+                );
+                return;
+              }
+
+              setState(() {
+                item.quantity -= qty;
+                if (item.quantity == 0) {
+                  item.isBought = true;
+                }
+              });
+
+              Navigator.pop(context);
+              ScaffoldMessenger.of(context).showSnackBar(
+                SnackBar(content: Text('Acquired $qty item(s) successfully!')),
+              );
+            },
+            style: ElevatedButton.styleFrom(backgroundColor: Colors.green),
+            child: const Text('Submit'),
+          ),
+        ],
+      ),
+    );
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    if (widget.role == null) {
+      return const Center(
+        child: Padding(
+          padding: EdgeInsets.all(16.0),
+          child: Text(
+            'Please select your role (Sender or Receiver) from the Home screen to view categories.',
+            textAlign: TextAlign.center,
+            style: TextStyle(fontSize: 18),
+          ),
+        ),
+      );
+    }
+    if (widget.postedItems.isEmpty) {
+      return Center(
+        child: Padding(
+          padding: const EdgeInsets.all(16.0),
+          child: Text(
+            widget.role == 'Sender'
+                ? 'You haven\'t posted any items yet. Use the "Post" tab to add items.'
+                : 'No items have been posted yet. Check back later!',
+            textAlign: TextAlign.center,
+            style: const TextStyle(fontSize: 18),
+          ),
+        ),
+      );
+    }
+
+    return ListView(
+      children: widget.categories.map<Widget>((String category) {
+        final List<Item> itemsInCategory = widget.postedItems
+            .where((Item item) => item.category == category)
+            .toList();
+
+        return ExpansionTile(
+          title: Text(
+            category,
+            style: const TextStyle(fontWeight: FontWeight.bold),
+          ),
+          children: itemsInCategory.isEmpty
+              ? <Widget>[
+                  const ListTile(
+                    title: Text('No items available in this category.'),
+                  ),
+                ]
+              : itemsInCategory.map<Widget>((Item item) {
+                  return ListTile(
+                    title: Text(item.description),
+                    subtitle: Text('Qty: ${item.quantity}'),
+                    trailing: widget.role == 'Receiver'
+                        ? item.isBought
+                              ? const Text(
+                                  'Acquired',
+                                  style: TextStyle(color: Colors.grey),
+                                )
+                              : ElevatedButton(
+                                  onPressed: () =>
+                                      _showPurchaseDialog(context, item),
+                                  style: ElevatedButton.styleFrom(
+                                    backgroundColor: Colors.green,
+                                  ),
+                                  child: const Text('Acquire'),
+                                )
+                        : null,
+                  );
+                }).toList(),
+        );
+      }).toList(),
+    );
+  }
+}
